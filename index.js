@@ -114,3 +114,90 @@ function gameObject() {
         },
     };
 }
+
+
+// Helper: combine all players
+const allPlayers = () => {
+  const game = gameObject();
+  return { ...game.home.players, ...game.away.players };
+};
+
+// 1. numPointsScored
+const numPointsScored = playerName => allPlayers()[playerName].points;
+
+// 2. shoeSize
+const shoeSize = playerName => allPlayers()[playerName].shoe;
+
+// 3. teamColors
+const teamColors = teamName => {
+  const game = gameObject();
+  return Object.values(game).find(team => team.teamName === teamName).colors;
+};
+
+// 4. teamNames
+const teamNames = () => Object.values(gameObject()).map(team => team.teamName);
+
+// 5. playerNumbers
+const playerNumbers = teamName => {
+  const team = Object.values(gameObject()).find(team => team.teamName === teamName);
+  return Object.values(team.players).map(player => player.number);
+};
+
+// 6. playerStats
+const playerStats = playerName => allPlayers()[playerName];
+
+// 7. bigShoeRebounds
+const bigShoeRebounds = () => {
+  const players = allPlayers();
+  const playerWithBiggestShoe = Object.values(players).reduce((max, player) =>
+    player.shoe > max.shoe ? player : max
+  );
+  return playerWithBiggestShoe.rebounds;
+};
+
+// 8. mostPointsScored
+const mostPointsScored = () => {
+  const players = allPlayers();
+  return Object.entries(players).reduce((maxPlayer, [name, stats]) =>
+    stats.points > players[maxPlayer]?.points ? name : maxPlayer
+  , "");
+};
+
+// 9. winningTeam
+const winningTeam = () => {
+  const game = gameObject();
+  const teamPoints = Object.values(game).map(team =>
+    Object.values(team.players).reduce((sum, player) => sum + player.points, 0)
+  );
+  return teamPoints[0] > teamPoints[1] ? game.home.teamName : game.away.teamName;
+};
+
+// 10. playerWithLongestName
+const playerWithLongestName = () => {
+  const players = Object.keys(allPlayers());
+  return players.reduce((longest, name) => (name.length > longest.length ? name : longest), "");
+};
+
+// 11. doesLongNameStealATon
+const doesLongNameStealATon = () => {
+  const players = allPlayers();
+  const longestNamePlayer = playerWithLongestName();
+  const maxSteals = Math.max(...Object.values(players).map(p => p.steals));
+  return players[longestNamePlayer].steals === maxSteals;
+};
+
+// Export for Jest tests
+module.exports = {
+  numPointsScored,
+  shoeSize,
+  teamColors,
+  teamNames,
+  playerNumbers,
+  playerStats,
+  bigShoeRebounds,
+  mostPointsScored,
+  winningTeam,
+  playerWithLongestName,
+  doesLongNameStealATon
+};
+
