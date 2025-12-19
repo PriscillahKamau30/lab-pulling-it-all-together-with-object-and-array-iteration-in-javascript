@@ -116,37 +116,37 @@ function gameObject() {
 }
 
 
-// Helper: combine all players
+// function to get all the players into one object
 const allPlayers = () => {
   const game = gameObject();
   return { ...game.home.players, ...game.away.players };
 };
 
-// 1. numPointsScored
+// points scored by a player
 const numPointsScored = playerName => allPlayers()[playerName].points;
 
-// 2. shoeSize
+// shoe size of a player
 const shoeSize = playerName => allPlayers()[playerName].shoe;
 
-// 3. teamColors
+// teamColors
 const teamColors = teamName => {
   const game = gameObject();
   return Object.values(game).find(team => team.teamName === teamName).colors;
 };
 
-// 4. teamNames
+// teamNames
 const teamNames = () => Object.values(gameObject()).map(team => team.teamName);
 
-// 5. playerNumbers
+// playerNumbers
 const playerNumbers = teamName => {
   const team = Object.values(gameObject()).find(team => team.teamName === teamName);
   return Object.values(team.players).map(player => player.number);
 };
 
-// 6. playerStats
+// Stats for a player
 const playerStats = playerName => allPlayers()[playerName];
 
-// 7. bigShoeRebounds
+// rebounds of the player with the biggest shoe size
 const bigShoeRebounds = () => {
   const players = allPlayers();
   const playerWithBiggestShoe = Object.values(players).reduce((max, player) =>
@@ -155,7 +155,7 @@ const bigShoeRebounds = () => {
   return playerWithBiggestShoe.rebounds;
 };
 
-// 8. mostPointsScored
+// Player with the most points
 const mostPointsScored = () => {
   const players = allPlayers();
   return Object.entries(players).reduce((maxPlayer, [name, stats]) =>
@@ -163,7 +163,7 @@ const mostPointsScored = () => {
   , "");
 };
 
-// 9. winningTeam
+// winning team
 const winningTeam = () => {
   const game = gameObject();
   const teamPoints = Object.values(game).map(team =>
@@ -172,13 +172,13 @@ const winningTeam = () => {
   return teamPoints[0] > teamPoints[1] ? game.home.teamName : game.away.teamName;
 };
 
-// 10. playerWithLongestName
+// player with longest name
 const playerWithLongestName = () => {
   const players = Object.keys(allPlayers());
   return players.reduce((longest, name) => (name.length > longest.length ? name : longest), "");
 };
 
-// 11. doesLongNameStealATon
+// does the player with the longest name have the most steals
 const doesLongNameStealATon = () => {
   const players = allPlayers();
   const longestNamePlayer = playerWithLongestName();
