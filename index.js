@@ -115,78 +115,172 @@ function gameObject() {
     };
 }
 
+// Function to get all players in one object
+function allPlayers() {
+  var game = gameObject();
+  var combined = {};
+  
+  // Add home players
+  var homePlayerKeys = Object.keys(game.home.players);
+  for (var i = 0; i < homePlayerKeys.length; i++) {
+    var key = homePlayerKeys[i];
+    combined[key] = game.home.players[key];
+  }
+  
+  // Add away players
+  var awayPlayerKeys = Object.keys(game.away.players);
+  for (var i = 0; i < awayPlayerKeys.length; i++) {
+    var key = awayPlayerKeys[i];
+    combined[key] = game.away.players[key];
+  }
+  
+  return combined;
+}
 
-// function to get all the players into one object
-const allPlayers = () => {
-  const game = gameObject();
-  return { ...game.home.players, ...game.away.players };
-};
+// Points scored by a player
+function numPointsScored(playerName) {
+  var players = allPlayers();
+  return players[playerName].points;
+}
 
-// points scored by a player
-const numPointsScored = playerName => allPlayers()[playerName].points;
+// Shoe size of a player
+function shoeSize(playerName) {
+  var players = allPlayers();
+  return players[playerName].shoe;
+}
 
-// shoe size of a player
-const shoeSize = playerName => allPlayers()[playerName].shoe;
+// Team colors
+function teamColors(teamName) {
+  var game = gameObject();
+  if (game.home.teamName === teamName) {
+    return game.home.colors;
+  } else if (game.away.teamName === teamName) {
+    return game.away.colors;
+  }
+}
 
-// teamColors
-const teamColors = teamName => {
-  const game = gameObject();
-  return Object.values(game).find(team => team.teamName === teamName).colors;
-};
+// Team names
+function teamNames() {
+  var game = gameObject();
+  return [game.home.teamName, game.away.teamName];
+}
 
-// teamNames
-const teamNames = () => Object.values(gameObject()).map(team => team.teamName);
+// Player numbers for a team
+function playerNumbers(teamName) {
+  var game = gameObject();
+  var numbers = [];
+  var teamPlayers;
+  
+  if (game.home.teamName === teamName) {
+    teamPlayers = game.home.players;
+  } else if (game.away.teamName === teamName) {
+    teamPlayers = game.away.players;
+  }
+  
+  var playerKeys = Object.keys(teamPlayers);
+  for (var i = 0; i < playerKeys.length; i++) {
+    numbers.push(teamPlayers[playerKeys[i]].number);
+  }
+  
+  return numbers;
+}
 
-// playerNumbers
-const playerNumbers = teamName => {
-  const team = Object.values(gameObject()).find(team => team.teamName === teamName);
-  return Object.values(team.players).map(player => player.number);
-};
+// Player stats
+function playerStats(playerName) {
+  var players = allPlayers();
+  return players[playerName];
+}
 
-// Stats for a player
-const playerStats = playerName => allPlayers()[playerName];
+// Rebounds of player with biggest shoe
+function bigShoeRebounds() {
+  var players = allPlayers();
+  var biggestShoe = 0;
+  var rebounds = 0;
+  
+  var playerKeys = Object.keys(players);
+  for (var i = 0; i < playerKeys.length; i++) {
+    var player = players[playerKeys[i]];
+    if (player.shoe > biggestShoe) {
+      biggestShoe = player.shoe;
+      rebounds = player.rebounds;
+    }
+  }
+  
+  return rebounds;
+}
 
-// rebounds of the player with the biggest shoe size
-const bigShoeRebounds = () => {
-  const players = allPlayers();
-  const playerWithBiggestShoe = Object.values(players).reduce((max, player) =>
-    player.shoe > max.shoe ? player : max
-  );
-  return playerWithBiggestShoe.rebounds;
-};
+// Player with most points
+function mostPointsScored() {
+  var players = allPlayers();
+  var maxPoints = 0;
+  var topPlayer = "";
+  
+  var playerKeys = Object.keys(players);
+  for (var i = 0; i < playerKeys.length; i++) {
+    var player = players[playerKeys[i]];
+    if (player.points > maxPoints) {
+      maxPoints = player.points;
+      topPlayer = playerKeys[i];
+    }
+  }
+  
+  return topPlayer;
+}
 
-// Player with the most points
-const mostPointsScored = () => {
-  const players = allPlayers();
-  return Object.entries(players).reduce((maxPlayer, [name, stats]) =>
-    stats.points > players[maxPlayer]?.points ? name : maxPlayer
-  , "");
-};
+// Winning team
+function winningTeam() {
+  var game = gameObject();
+  var homePoints = 0;
+  var awayPoints = 0;
+  
+  var homeKeys = Object.keys(game.home.players);
+  for (var i = 0; i < homeKeys.length; i++) {
+    homePoints += game.home.players[homeKeys[i]].points;
+  }
+  
+  var awayKeys = Object.keys(game.away.players);
+  for (var i = 0; i < awayKeys.length; i++) {
+    awayPoints += game.away.players[awayKeys[i]].points;
+  }
+  
+  if (homePoints > awayPoints) {
+    return game.home.teamName;
+  } else {
+    return game.away.teamName;
+  }
+}
 
-// winning team
-const winningTeam = () => {
-  const game = gameObject();
-  const teamPoints = Object.values(game).map(team =>
-    Object.values(team.players).reduce((sum, player) => sum + player.points, 0)
-  );
-  return teamPoints[0] > teamPoints[1] ? game.home.teamName : game.away.teamName;
-};
+// Player with longest name
+function playerWithLongestName() {
+  var players = Object.keys(allPlayers());
+  var longest = "";
+  
+  for (var i = 0; i < players.length; i++) {
+    if (players[i].length > longest.length) {
+      longest = players[i];
+    }
+  }
+  
+  return longest;
+}
 
-// player with longest name
-const playerWithLongestName = () => {
-  const players = Object.keys(allPlayers());
-  return players.reduce((longest, name) => (name.length > longest.length ? name : longest), "");
-};
-
-// does the player with the longest name have the most steals
-const doesLongNameStealATon = () => {
-  const players = allPlayers();
-  const longestNamePlayer = playerWithLongestName();
-  const maxSteals = Math.max(...Object.values(players).map(p => p.steals));
+// Does the player with the longest name have the most steals
+function doesLongNameStealATon() {
+  var players = allPlayers();
+  var longestNamePlayer = playerWithLongestName();
+  
+  var maxSteals = 0;
+  var playerKeys = Object.keys(players);
+  for (var i = 0; i < playerKeys.length; i++) {
+    if (players[playerKeys[i]].steals > maxSteals) {
+      maxSteals = players[playerKeys[i]].steals;
+    }
+  }
+  
   return players[longestNamePlayer].steals === maxSteals;
-};
+}
 
-// Export for Jest tests
+// Export functions for Jest tests
 module.exports = {
   numPointsScored,
   shoeSize,
@@ -200,4 +294,3 @@ module.exports = {
   playerWithLongestName,
   doesLongNameStealATon
 };
-
